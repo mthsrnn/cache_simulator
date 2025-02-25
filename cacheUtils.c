@@ -10,3 +10,11 @@ Endereco converteEndianess(Endereco enderecoEntrada) {
 
     return enderecoConvertido;
 }
+
+size_t fast_log2 (size_t entrada) {
+    size_t saida = 0;
+    while (entrada >>= 1) {
+        saida++;
+    }
+    return saida;
+}
