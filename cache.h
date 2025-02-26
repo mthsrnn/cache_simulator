@@ -69,4 +69,7 @@ Resultado_acesso SubstituiLRU (Endereco endereco, Contexto_substituicao* context
 Resultado_acesso SubstituiRANDOM (Endereco endereco, Contexto_substituicao* contexto);
 // As três funções acima operam o contexto de substituição da cache em caso de miss.
 
+Substituicao converteSubstituicao(char c);
+// Converte um caractere em uma enumeração de substituição
+
 #endif // !CACHE_H

@@ -54,6 +54,20 @@ Cache* ConstroiCache (size_t nsets, size_t bsize, size_t assoc, Substituicao sub
     return cache;
 }
 
+Substituicao converteSubstituicao(char c) {
+    switch (c) {
+        case 'l':
+            return LRU;
+        case 'f':
+            return FIFO;
+        case 'r':
+            return RANDOM;
+        default:
+            fprintf(stderr, "ERRO: Substituição inválida.\n");
+            exit(EXIT_FAILURE);
+    }
+}
+
 Resultado_acesso SubstituiFIFO (Endereco endereco, Contexto_substituicao* contexto);
 Resultado_acesso SubstituiLRU (Endereco endereco, Contexto_substituicao* contexto);
 Resultado_acesso SubstituiRANDOM (Endereco endereco, Contexto_substituicao* contexto);
