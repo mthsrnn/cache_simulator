@@ -1,3 +1,5 @@
+#include "cachetypes.h"
+
 Cache* ConstroiCache (uint32_t nsets, uint32_t bsize, uint32_t assoc, Substituicao substituicao) {
     Cache *cache = malloc(sizeof(Cache));
     MALLOC_NULL_CHECK(cache, "ERRO: Nao foi possivel alocar memória para a cache.");
@@ -19,64 +21,65 @@ Cache* ConstroiCache (uint32_t nsets, uint32_t bsize, uint32_t assoc, Substituic
     MALLOC_NULL_CHECK(cache->memoria->tag, "ERRO: Não foi possível alocar memória para a cache.");
     cache->memoria->valor = (uint8_t*) calloc(nsets * assoc, sizeof(uint8_t));
     MALLOC_NULL_CHECK(cache->memoria->valor, "ERRO: Não foi possível alocar memória para a cache.");
+
     cache->memoria->itensArmazenados = 0;
 
-    if (nsets == 1) {
+    if (assoc == 1) {
         cache->contexto = NULL;
-        cache->TrataMiss = NULL;
+        cache->EscolheVia = &SubstituiDIRETO;
     } else {
-        cache->contexto = malloc(nsets * sizeof(Contexto_substituicao));
-        MALLOC_NULL_CHECK(cache->contexto, "ERRO: Não foi possível alocar contexto de substituição");
 
         switch (substituicao) {
             case FIFO:
-                cache->TrataMiss = &SubstituiFIFO;
+                cache->contexto = malloc(nsets * sizeof(Contexto_substituicao));
+                MALLOC_NULL_CHECK(cache->contexto, "ERRO: Não foi possível alocar contexto de substituição");
+                cache->EscolheVia = &SubstituiFIFO;
                 break;
                 
             case LRU:
-                cache->TrataMiss = &SubstituiLRU;
+                cache->contexto = malloc(nsets * sizeof(Contexto_substituicao));
+                MALLOC_NULL_CHECK(cache->contexto, "ERRO: Não foi possível alocar contexto de substituição");
+                cache->EscolheVia = &SubstituiLRU;
                 break;
 
             case RANDOM:
-                cache->TrataMiss = &SubstituiRANDOM;
+                cache->contexto = NULL;
+                cache->EscolheVia = &SubstituiRANDOM;
                 break;
 
             default:
-                cache->TrataMiss = NULL;
+                cache->contexto = NULL;
+                cache->EscolheVia = NULL;
                 break;
         }
 
-        for (uint32_t i = 0; i < nsets; i++) {
-            cache->contexto[i].pPrimeiro = NULL;
-            cache->contexto[i].pUltimo = NULL;
+        if (cache->contexto != NULL) {
+            for (uint32_t i = 0; i < nsets; i++) {
+                cache->contexto[i].pPrimeiro = NULL;
+                cache->contexto[i].pUltimo = NULL;
 
-            for (uint32_t j = 0; j < assoc; j++) {
-                Nodo *nodo = (Nodo*) malloc(sizeof(Nodo));
-                MALLOC_NULL_CHECK(nodo, "ERRO: Não foi possível alocar um nodo para o contexto de substituição.");
-                
-                nodo->pAnterior = cache->contexto[i].pUltimo;
-                nodo->pProx = NULL;
+                for (uint32_t j = 0; j < assoc; j++) {
+                    Nodo *nodo = (Nodo*) malloc(sizeof(Nodo));
+                    MALLOC_NULL_CHECK(nodo, "ERRO: Não foi possível alocar um nodo para o contexto de substituição.");
 
-                if (cache->contexto[i].pUltimo == NULL) {
-                    cache->contexto[i].pUltimo->pProx = nodo;
-                } else {
-                    cache->contexto[i].pPrimeiro = nodo;
-                    
-                } 
-                cache->contexto[i].pUltimo= nodo;
+                    nodo->pAnterior = NULL;
+                    nodo->pProx = NULL;
+
+                    if (cache->contexto[i].pPrimeiro == NULL) {
+                        cache->contexto[i].pPrimeiro = nodo;
+                        cache->contexto[i].pUltimo = nodo;
+                    } else {
+                        cache->contexto[i].pPrimeiro = nodo;
+                        cache->contexto[i].pUltimo->pProx = nodo;
+                        cache->contexto[i].pUltimo= nodo;
+                    } 
+                }
+
             }
-
         }
+
     }
     return cache;
-}
-
-uint32_t EndercoParaTag (Endereco endereco, uint32_t bits_indice, uint32_t bits_offset) {
-    return endereco.endereco >> (bits_indice + bits_offset);
-}
-
-uint32_t EndercoParaIndice (Endereco endereco, uint32_t bits_indice, uint32_t bits_offset) {
-    return (endereco.endereco >> bits_offset) & ((1U << bits_indice) - 1);
 }
 
 Resultado_acesso AcessaCache (uint32_t indice, uint32_t tag, Cache *cache) {
@@ -98,4 +101,9 @@ Resultado_acesso AcessaCache (uint32_t indice, uint32_t tag, Cache *cache) {
 
     cache->missesConflito++;
     return CACHE_MISS_CONFLITO;
+}
+
+void EscreveCache (uint32_t indice, uint32_t tag, uint32_t via, Cache *cache) {
+    cache->memoria->tag[indice * (cache->assoc) + via] = tag;
+    cache->memoria->valor[indice * (cache->assoc) + via] = 1U;
 }

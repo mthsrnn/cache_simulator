@@ -1,10 +1,14 @@
+#ifndef H_CACHETYPES
+#define H_CACHETYPES
+#include <stdint.h>
+
 #define MALLOC_NULL_CHECK(ponteiro, mensagem) \
-    do { \
-        if ((ponteiro) == NULL) { \
-            perror((mensagem)); \
-            exit(EXIT_FAILURE); \
-        } \
-    } while(0)
+do { \
+    if ((ponteiro) == NULL) { \
+        perror((mensagem)); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
 
 typedef enum {
     CACHE_HIT = 0, // o compilador já faria isso automaticamente, mas é bom documentar que 0 significa sucesso.
@@ -55,5 +59,10 @@ typedef struct cache {
     uint32_t hits;
     Memoria_cache *memoria;
     Contexto_substituicao *contexto;
-    uint32_t (*TrataMiss)(uint32_t indice, uint32_t tag, struct cache *cache);
+    // OperaContexto: deve operar o contexto de substituição (se existir) e retornar a VIA da cache em que deve
+    // ocorrer a substituição.
+    uint32_t (*EscolheVia)(uint32_t indice, uint32_t tag, struct cache *cache);
 } Cache;
+
+#endif /* ifndef H_CACHETYPES */
+
