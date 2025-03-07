@@ -1,3 +1,4 @@
+#include <stdio.h>
 Cache* ConstroiCache (uint32_t nsets, uint32_t bsize, uint32_t assoc, Substituicao substituicao) {
     Cache *cache = malloc(sizeof(Cache));
     MALLOC_NULL_CHECK(cache, "CACHE_STRUCT");
@@ -106,4 +107,24 @@ Resultado_acesso AcessaCache (uint32_t indice, uint32_t tag, Cache *cache) {
 void EscreveCache (uint32_t indice, uint32_t via, uint32_t tag, Cache *cache) {
     cache->memoria->tag[indice * (cache->assoc) + via] = tag;
     cache->memoria->valor[indice * (cache->assoc) + via] = 1U;
+}
+
+void DestroiCache (Cache *cache) {
+    Nodo *atual, *proximo;
+    if (cache->contexto != NULL) {
+        for (int i = 0; i < cache->nsets; i++) {
+            atual = cache->contexto[i].pPrimeiro;
+            while (atual != NULL) {
+                proximo = atual->pProx;
+                free(atual);
+                atual = proximo;
+            }
+        }
+    free( cache->contexto );
+    }
+
+    free( cache->memoria->valor );
+    free( cache->memoria->tag );
+    free ( cache->memoria );
+    free ( cache );
 }

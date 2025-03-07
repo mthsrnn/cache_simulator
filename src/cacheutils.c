@@ -1,3 +1,4 @@
+#include <stdio.h>
 uint32_t ConverteEndianess(Endereco enderecoEntrada) {
     Endereco enderecoConvertido;
 
@@ -18,9 +19,11 @@ uint32_t FastLog2 (uint32_t entrada) {
 
 uint32_t FastRandomUint32 (uint32_t * seed, uint32_t limite) {
     // utilizando xorshift
-    *seed = *seed ^ *seed << 13;
-    *seed = *seed ^ *seed >> 17;
-    *seed = *seed ^ *seed << 5;
+    uint32_t seedLocal = *seed;
+    seedLocal = seedLocal ^ seedLocal << 13;
+    seedLocal = seedLocal ^ seedLocal >> 17;
+    seedLocal = seedLocal ^ seedLocal << 5;
+    *seed = seedLocal;
     return (*seed % (limite));
 }
 
@@ -31,4 +34,3 @@ uint32_t EnderecoParaTag (Endereco endereco, uint32_t bits_indice, uint32_t bits
 uint32_t EnderecoParaIndice (Endereco endereco, uint32_t bits_indice, uint32_t bits_offset) {
     return (endereco.endereco >> bits_offset) & ((1U << bits_indice) - 1);
 }
-

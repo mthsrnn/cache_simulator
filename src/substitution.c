@@ -44,6 +44,13 @@ uint32_t SubstituiRANDOM (uint32_t indice, Cache *cache) {
     if (nodo != NULL) {
         uint32_t via = nodo->via;
         cache->contexto[indice].pPrimeiro = nodo->pProx;
+
+        if(cache->contexto[indice].pPrimeiro != NULL)
+            cache->contexto[indice].pPrimeiro->pAnterior = NULL;
+
+        if (cache->contexto[indice].pPrimeiro == NULL)
+            cache->contexto[indice].pUltimo = NULL;
+
         free(nodo);
         return via;
     }

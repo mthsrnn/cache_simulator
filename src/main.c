@@ -104,5 +104,8 @@ int main(int argc, char *argv[])
            (float) cache->missesCapacidade / misses,
            (float) cache->missesConflito / misses );
 
+    DestroiCache(cache);
+    fclose(arquivo);
+
     return EXIT_SUCCESS;
 }
