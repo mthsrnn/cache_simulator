@@ -1,5 +1,3 @@
-#include "cachetypes.h"
-
 uint32_t ConverteEndianess(Endereco enderecoEntrada) {
     Endereco enderecoConvertido;
 
