@@ -17,11 +17,11 @@ uint32_t FastLog2 (uint32_t entrada) {
 }
 
 uint32_t FastRandomUint32 (uint32_t * seed, uint32_t limite) {
-    // utilizando um lcg
+    // utilizando xorshift
     *seed = *seed ^ *seed << 13;
-    *seed = *seed ^ *seed >> 13;
+    *seed = *seed ^ *seed >> 17;
     *seed = *seed ^ *seed << 5;
-    return (*seed % (limite + 1));
+    return (*seed % (limite));
 }
 
 uint32_t EnderecoParaTag (Endereco endereco, uint32_t bits_indice, uint32_t bits_offset) {

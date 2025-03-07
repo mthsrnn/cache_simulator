@@ -103,7 +103,7 @@ Resultado_acesso AcessaCache (uint32_t indice, uint32_t tag, Cache *cache) {
     return CACHE_MISS_CONFLITO;
 }
 
-void EscreveCache (uint32_t indice, uint32_t tag, uint32_t via, Cache *cache) {
+void EscreveCache (uint32_t indice, uint32_t via, uint32_t tag, Cache *cache) {
     cache->memoria->tag[indice * (cache->assoc) + via] = tag;
     cache->memoria->valor[indice * (cache->assoc) + via] = 1U;
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <time.h>
 
 #include "cachetypes.h"
 #include "cacheutils.c"
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
         perror("ENTRADA");
         exit(EXIT_FAILURE);
     }
+
     uint32_t nsets = atoi(argv[1]);
     uint32_t bsize = atoi(argv[2]);
     uint32_t assoc = atoi(argv[3]);
@@ -48,6 +50,15 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    // sem planos melhores para a flag de saída, usamos para determinar estocasticidade
+    // 0 -> aleatorio internamente, diferente em cada execução (maomenos)
+    // 1 -> aleatorio internamente, determinístico
+    if (*argv[5] == '0') {
+        // tecnica de estocasticidade: "time XOR salt" (tempo do sistema ^ o endereço de uma variável no stack)
+        cache->seed = (uint32_t) time(NULL) ^ (uint32_t) (uintptr_t) &nsets;
+        //printf("seed: %u\n", cache->seed);
+    }
+
     Endereco endereco;
     uint32_t acessos, misses;
 
@@ -60,7 +71,7 @@ int main(int argc, char *argv[])
 
         if ( acesso != CACHE_HIT && cache->EscolheVia != NULL ) { /* tratamento de miss */
             uint32_t via = cache->EscolheVia(indice, cache);
-            EscreveCache(indice, tag, via, cache);
+            EscreveCache(indice, via, tag, cache);
         }
 
         switch (acesso) { /* contabilização de miss */
