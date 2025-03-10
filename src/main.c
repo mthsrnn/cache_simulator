@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     FILE *arquivo = fopen(argv[6], "rb");
 
     if (arquivo == NULL) {
-        perror("ARQUIVO");
+        perror(argv[6]);
         exit(EXIT_FAILURE);
     }
 
