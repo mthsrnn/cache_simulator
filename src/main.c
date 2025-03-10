@@ -11,8 +11,9 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 6) {
+    if (argc != 7) {
         errno = EINVAL;
+        puts("Insira os argumentos no formato:\n./cache_simulator <nsets> <bsize> <assoc> <substituição> <flag_saida> arquivo_de_entrada\n");
         perror("ENTRADA");
         exit(EXIT_FAILURE);
     }

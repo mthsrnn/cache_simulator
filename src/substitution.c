@@ -23,8 +23,10 @@ void PingContexto (uint32_t indice, uint32_t via, Cache *cache) {
 
     atual->pAnterior = cache->contexto[indice].pUltimo;
     atual->pProx = NULL;
-    if (cache->contexto->pUltimo != NULL)
+
+    if (cache->contexto[indice].pUltimo != NULL)
         cache->contexto[indice].pUltimo->pProx = atual;
+
     cache->contexto[indice].pUltimo = atual;
 }
 uint32_t SubstituiFIFO (uint32_t indice, Cache *cache) {
